@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>🔥 Rumble Battle 🔥</title>
+<style>
+body { background:#111; color:#eee; font-family:sans-serif; text-align:center; }
+h1 { margin-bottom:20px; }
+ul { list-style:none; padding:0; max-height:300px; overflow-y:auto; }
+li { margin:5px 0; padding:10px; background:#222; border-radius:5px; }
+.winner { color:#ffd700; font-weight:bold; font-size:1.2em; }
+#participants { margin-bottom:20px; max-height:150px; overflow-y:auto; }
+</style>
+</head>
+<body>
+
+<h1>🔥 Rumble Battle 🔥</h1>
+
+<h2>残り参加者</h2>
+<ul id="participants"></ul>
+
+<h2>勝敗結果</h2>
+<ul id="results"></ul>
+
+<script>
+// ==========================
+// 1. 参加者設定
+// ==========================
+let participants = ['Alice', 'Bob', 'Charlie', 'Dave', 'Eve']; // 好きな名前に変更可
+
+const ulParticipants = document.getElementById('participants');
+const ulResults = document.getElementById('results');
+
+function updateParticipants() {
+  ulParticipants.innerHTML = '';
+  participants.forEach(p => {
+    const li = document.createElement('li');
+    li.textContent = p;
+    ulParticipants.appendChild(li);
+  });
+}
+
+// 初期表示
+updateParticipants();
+
+// ==========================
+// 2. 戦闘処理
+// ==========================
+function fightRound() {
+  if (participants.length <= 1) {
+    // 優勝者
+    const champion = participants[0];
+    const li = document.createElement('li');
+    li.textContent = `${champion}が優勝者です 🏆`;
+    li.classList.add('winner');
+    ulResults.appendChild(li);
+    li.scrollIntoView({behavior:"smooth"});
+    return false;
+  }
+
+  // ランダムに2人選ぶ
+  const idx1 = Math.floor(Math.random() * participants.length);
+  let idx2;
+  do { idx2 = Math.floor(Math.random() * participants.length); } while(idx2===idx1);
+
+  const p1 = participants[idx1];
+  const p2 = participants[idx2];
+
+  // 勝敗決定
+  const winner = Math.random() >= 0.5 ? p1 : p2;
+  const loser = winner === p1 ? p2 : p1;
+
+  // 敗者削除
+  participants = participants.filter(p => p !== loser);
+
+  // 結果表示
+  const li = document.createElement('li');
+  li.textContent = `${winner}は${loser}に勝ちました、${loser}は戦闘不能です`;
+  ulResults.appendChild(li);
+  li.scrollIntoView({behavior:"smooth"});
+
+  updateParticipants();
+
+  return true;
+}
+
+// ==========================
+// 3. 3秒ごとに戦闘
+// ==========================
+const interval = setInterval(() => {
+  const continueBattle = fightRound();
+  if(!continueBattle) clearInterval(interval);
+}, 3000);
+</script>
+
+</body>
+</html>
